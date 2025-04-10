@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect , useState} from "react";
 import { IoIosCash } from "react-icons/io";
 import { TbLocationFilled } from "react-icons/tb";
 import { TiHomeOutline } from "react-icons/ti";
@@ -8,6 +8,7 @@ import { rideCompletedDataResponse } from "../../interfaces";
 import { useSocket } from "../../services";
 import { useConfirmRideDataStore } from "../../store";
 import { LiveTracking, VehicleType } from "../molecules";
+import FeedbackForm from "../molecules/FeedbackForm";
 
 const RidingUserLayout = () => {
   const { confirmRideData } = useConfirmRideDataStore();
@@ -17,6 +18,7 @@ const RidingUserLayout = () => {
   const captain = confirmRideData?.captain;
 
   const captainFullName = `${captain?.fullName.firstName} ${captain?.fullName.lastName}`;
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const ride = confirmRideData?.updatedRide;
 
@@ -28,7 +30,7 @@ const RidingUserLayout = () => {
       const handleRideCompleted = (data: rideCompletedDataResponse) => {
         console.log(data);
         toast.success(data.messageNotification);
-        navigate("/user/home");
+        setShowFeedback(true);
       };
 
       socket.on("ride-completed", handleRideCompleted);
@@ -61,6 +63,9 @@ const RidingUserLayout = () => {
       <LiveTracking />
 
       <div className="px-6 bg-white md:h-1/2 lg:h-1/2 sm:h-1/2 flex flex-col justify-between absolute bottom-3 w-full py-2">
+        {showFeedback ? (
+          <FeedbackForm isUser={true} />
+        ) : (
         <div className="flex flex-col gap-auto lg:gap-4">
           <div className="image-texts flex justify-between items-center lg:mt-3">
             <div className="img">
@@ -108,6 +113,7 @@ const RidingUserLayout = () => {
             </button>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
